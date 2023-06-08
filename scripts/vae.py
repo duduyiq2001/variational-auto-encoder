@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class fashionVAE():
-  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate):
+  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed):
     self.epochs = epochs
     self.enc = self.encoder(*encoderParams)
     self.enc.output
@@ -23,6 +23,11 @@ class fashionVAE():
     self.samplingLayer = self.sampling((numLatentVars,), (numLatentVars,))
     self.optimizer = tf.keras.optimizers.legacy.Adam(lr = learningRate)
     self.trainBatch = tf.data.Dataset.from_tensor_slices(xTrain[:trainLength]).shuffle(seed).batch(batchSize)
+    self.xTrain = xTrain
+    self.xTest = xTest
+    self.yTest = yTest
+    self.xTestReshaped = xTestReshaped
+    self.yLabelValues = yLabelValues
 
   def sampling(self, input1,input2):
     def samplingModelLambda(inputParams):
@@ -126,23 +131,23 @@ class fashionVAE():
 
   def generateImages(self):
     figsize = 15
-    m, v = self.enc.predict(xTest[:16]/255.0)
+    m, v = self.enc.predict(self.xTest[:16]/255.0)
     latent = self.samplingLayer([m,v])
     reconst = self.dec.predict(latent)
     fig = plt.figure(figsize=(figsize, 10))
     for i in range(16):
         ax = fig.add_subplot(4, 4, i+1)
         ax.axis('off')
-        ax.text(0.5, -0.15, str(yLabelValues[yTest[i]]), fontsize=10, ha='center', transform=ax.transAxes)
+        ax.text(0.5, -0.15, str(self.yLabelValues[self.yTest[i]]), fontsize=10, ha='center', transform=ax.transAxes)
         ax.imshow(reconst[i, :,:,0]*255, cmap = 'gray')
     plt.show()
 
   def testTrainModel(self):
     start = time.time()
-    mean, log_var = self.enc.predict(xTrain)
+    mean, log_var = self.enc.predict(self.xTrain)
     latent = self.samplingLayer([mean, log_var])
     generated_images = self.dec.predict(latent)
-    loss = self.vae_loss(xTrain, generated_images, mean, log_var)
+    loss = self.vae_loss(self.xTrain, generated_images, mean, log_var)
     totTime =  time.time()-start
     # print(loss)
     # divide totTime by six to make time comparable to
@@ -151,10 +156,10 @@ class fashionVAE():
 
   def testModel(self):
     start = time.time()
-    mean, log_var = self.enc.predict(xTestReshaped)
+    mean, log_var = self.enc.predict(self.xTestReshaped)
     latent = self.samplingLayer([mean, log_var])
     generated_images = self.dec.predict(latent)
-    loss = self.vae_loss(xTestReshaped, generated_images, mean, log_var)
+    loss = self.vae_loss(self.xTestReshaped, generated_images, mean, log_var)
     self.lossTest.append(tf.reduce_mean(loss))
     totTime =  time.time()-start
     self.timeTest.append(totTime)
