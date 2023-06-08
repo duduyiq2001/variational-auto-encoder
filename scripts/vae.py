@@ -8,6 +8,17 @@ from IPython import display
 import matplotlib.pyplot as plt
 import numpy as np
 
+(xTrain, yTrain), (xTest, yTest) = tf.keras.datasets.fashion_mnist.load_data()
+xTrain = xTrain.reshape(xTrain.shape[0], 28, 28, 1).astype('float32')/255.0
+# xTrain = xTrain[:1500] # first 100 images
+# Batch + shuffle data
+seed = 60000 # seed for shuffling
+xTestReshaped = xTest.reshape(xTest.shape[0], 28, 28, 1).astype('float32')/255.0 # necessary when testing
+
+# Create dictionary of target classes
+# Index corresponds to each label
+yLabelValues = ['T-shirt/top','Trouser','Pullover','Dress','Coat','Sandal','Shirt','Sneaker','Bag','Ankle boot']
+
 class fashionVAE():
   def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate):
     self.epochs = epochs
@@ -121,7 +132,7 @@ class fashionVAE():
             loss_.append(tf.reduce_mean(loss))
         totTime =  time.time()-start
         self.timeTrain.append(totTime)
-        print('Time for epoch {} is {} sec, loss: {}'.format(epoch, totTime, sum(loss_)/len(loss_)))
+        print('Time for epoch {} is {} sec'.format(epoch, totTime))
     print(f'Time for all epochs is {sum(self.timeTrain)}')
 
   def generateImages(self):
@@ -135,15 +146,29 @@ class fashionVAE():
         ax.axis('off')
         ax.text(0.5, -0.15, str(yLabelValues[yTest[i]]), fontsize=10, ha='center', transform=ax.transAxes)
         ax.imshow(reconst[i, :,:,0]*255, cmap = 'gray')
+    plt.show()
+
+  def testTrainModel(self):
+    start = time.time()
+    mean, log_var = self.enc.predict(xTrain)
+    latent = self.samplingLayer([mean, log_var])
+    generated_images = self.dec.predict(latent)
+    loss = self.vae_loss(xTrain, generated_images, mean, log_var)
+    # self.lossTest.append(tf.reduce_mean(loss))
+    totTime =  time.time()-start
+    # self.timeTest.append(totTime)
+    # divide totTime by six to make time comparable to
+    print ('Time for predicting 10000 training images is {} sec, loss: {}'.format(totTime/6, tf.reduce_mean(loss)))
+
 
   def testModel(self):
     start = time.time()
-    mean, log_var = self.enc.predict(xTestReshaped/255.0)
+    mean, log_var = self.enc.predict(xTestReshaped)
     latent = self.samplingLayer([mean, log_var])
     generated_images = self.dec.predict(latent)
     loss = self.vae_loss(xTestReshaped, generated_images, mean, log_var)
     self.lossTest.append(tf.reduce_mean(loss))
     totTime =  time.time()-start
     self.timeTest.append(totTime)
-    print ('Time for predicting images is {} sec, loss: {}'.format(totTime, sum(self.lossTest)/len(self.lossTest)))
+    print ('Time for predicting 10000 test images is {} sec, loss: {}'.format(totTime, sum(self.lossTest)/len(self.lossTest)))
   
