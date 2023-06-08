@@ -132,8 +132,8 @@ class fashionVAE():
             loss_.append(tf.reduce_mean(loss))
         totTime =  time.time()-start
         self.timeTrain.append(totTime)
-        print('Time for epoch {} is {} sec'.format(epoch, totTime))
-    print(f'Time for all epochs is {sum(self.timeTrain)}')
+        print('Time for epoch {} is {} sec'.format(epoch + 1, totTime))
+    print(f'Time for training is {sum(self.timeTrain)}')
 
   def generateImages(self):
     figsize = 15
@@ -154,11 +154,10 @@ class fashionVAE():
     latent = self.samplingLayer([mean, log_var])
     generated_images = self.dec.predict(latent)
     loss = self.vae_loss(xTrain, generated_images, mean, log_var)
-    # self.lossTest.append(tf.reduce_mean(loss))
     totTime =  time.time()-start
-    # self.timeTest.append(totTime)
+    # print(loss)
     # divide totTime by six to make time comparable to
-    print ('Time for predicting 10000 training images is {} sec, loss: {}'.format(totTime/6, tf.reduce_mean(loss)))
+    print ('Average Loss for predicting 10000 training images: {}'.format(tf.reduce_mean(loss)))
 
 
   def testModel(self):
@@ -170,5 +169,6 @@ class fashionVAE():
     self.lossTest.append(tf.reduce_mean(loss))
     totTime =  time.time()-start
     self.timeTest.append(totTime)
-    print ('Time for predicting 10000 test images is {} sec, loss: {}'.format(totTime, sum(self.lossTest)/len(self.lossTest)))
+    # print(loss)
+    print ('Time for predicting 10000 test images is {} sec, Average loss: {}'.format(totTime, sum(self.lossTest)/len(self.lossTest)))
   
