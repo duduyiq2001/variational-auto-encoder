@@ -8,17 +8,6 @@ from IPython import display
 import matplotlib.pyplot as plt
 import numpy as np
 
-(xTrain, yTrain), (xTest, yTest) = tf.keras.datasets.fashion_mnist.load_data()
-xTrain = xTrain.reshape(xTrain.shape[0], 28, 28, 1).astype('float32')/255.0
-# xTrain = xTrain[:1500] # first 100 images
-# Batch + shuffle data
-seed = 60000 # seed for shuffling
-xTestReshaped = xTest.reshape(xTest.shape[0], 28, 28, 1).astype('float32')/255.0 # necessary when testing
-
-# Create dictionary of target classes
-# Index corresponds to each label
-yLabelValues = ['T-shirt/top','Trouser','Pullover','Dress','Coat','Sandal','Shirt','Sneaker','Bag','Ankle boot']
-
 class fashionVAE():
   def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate):
     self.epochs = epochs
