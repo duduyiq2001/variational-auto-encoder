@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class fashionVAE():
-  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed):
+  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,name="dbehdbw"):
     self.epochs = epochs
     self.enc = self.encoder(*encoderParams)
     self.enc.output
@@ -28,6 +28,7 @@ class fashionVAE():
     self.yTest = yTest
     self.xTestReshaped = xTestReshaped
     self.yLabelValues = yLabelValues
+    self.name = name
 
   def sampling(self, input1,input2):
     def samplingModelLambda(inputParams):
@@ -128,6 +129,7 @@ class fashionVAE():
         self.timeTrain.append(totTime)
         print('Time for epoch {} is {} sec'.format(epoch + 1, totTime))
     print(f'Time for training is {sum(self.timeTrain)}')
+    self.saveModels(self.name)
 
   def generateImages(self):
     figsize = 15
@@ -141,6 +143,7 @@ class fashionVAE():
         ax.text(0.5, -0.15, str(self.yLabelValues[self.yTest[i]]), fontsize=10, ha='center', transform=ax.transAxes)
         ax.imshow(reconst[i, :,:,0]*255, cmap = 'gray')
     plt.show()
+  
 
   def testTrainModel(self):
     start = time.time()
@@ -165,4 +168,7 @@ class fashionVAE():
     self.timeTest.append(totTime)
     # print(loss)
     print ('Time for predicting 10000 test images is {} sec, Average loss: {}'.format(totTime, sum(self.lossTest)/len(self.lossTest)))
+  def saveModels(self,name):
+    self.enc.save(f'./models/{name}_encoder')
+    self.dec.save(f'./models/{name}_decoder')
   
