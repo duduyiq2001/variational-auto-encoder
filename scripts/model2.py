@@ -11,9 +11,8 @@ xTestReshaped = xTest.reshape(xTest.shape[0], 28, 28, 1).astype('float32')/255.0
 # Index corresponds to each label
 yLabelValues = ['T-shirt/top','Trouser','Pullover','Dress','Coat','Sandal','Shirt','Sneaker','Bag','Ankle boot']
 
-numLatentVars = 10
 # encoder parameters
-# numLatentVars = 10
+numLatentVars = 2
 numLayers = 4
 inputShape = (28, 28, 1)
 layerInputs = [[32, 3, 1, None],[64, 3, 2, None],[64, 3, 2, None],[64, 3, 1, None]]
@@ -21,7 +20,7 @@ encoderParams = [inputShape, numLayers, layerInputs, numLatentVars]
 
 
 # decoder parameters
-inputShape = (numLatentVars,)
+inputShape = (2,)
 denseSize = 7 * 7 * 64
 reshapeSize = (7, 7, 64)
 numLayers = 3 # should be 1 less than numLayers in encoder
@@ -34,11 +33,11 @@ outputInputs = [1, 3, 1, 'sigmoid']
 decoderParams = [inputShape, denseSize, reshapeSize, numLayers, layerInputs, outputInputs]
 
 batchSize = 128
-# numLatentVars = 10
+numLatentVars = 2
 epochs = 3
 trainLength = 60000 # number of images to use in training, this is half the maximum
 learningRate = 0.0005
-VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed)
+VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed, 'model2')
 
 VAE.train()
 
@@ -49,7 +48,7 @@ VAE.testTrainModel()
 VAE.testModel()
 
 """
-Time for training is 326.09832549095154
-Average Loss for predicting 10000 training images: 34.78839111328125
-Time for predicting 10000 test images is 6.159387111663818 sec, Average loss: 34.86249923706055
+Time for training is 195.48065066337585
+Average Loss for predicting 10000 training images: 38.6306343078613
+Time for predicting 10000 test images is 6.2146337032318115 sec, Average loss: 38.616943359375
 """

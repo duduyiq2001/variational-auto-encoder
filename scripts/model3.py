@@ -35,9 +35,9 @@ decoderParams = [inputShape, denseSize, reshapeSize, numLayers, layerInputs, out
 batchSize = 128
 numLatentVars = 2
 epochs = 3
-trainLength = 30000 # number of images to use in training, this is half the maximum
-learningRate = 0.0005
-VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed)
+trainLength = 60000 # number of images to use in training, this is half the maximum
+learningRate = 0.001
+VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed, 'model3')
 
 VAE.train()
 
@@ -48,7 +48,7 @@ VAE.testTrainModel()
 VAE.testModel()
 
 """
-Time for training is 210.50025057792664
-Average Loss for predicting 10000 training images: 42.880226135253906
-Time for predicting 10000 test images is 15.53862190246582 sec, Average loss: 42.81425476074219
+Time for training is 191.40068817138672
+Average Loss for predicting 10000 training images: 53.54182434082031
+Time for predicting 10000 test images is 9.636746168136597 sec, Average loss: 53.599098205566406
 """

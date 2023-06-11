@@ -11,31 +11,34 @@ xTestReshaped = xTest.reshape(xTest.shape[0], 28, 28, 1).astype('float32')/255.0
 # Index corresponds to each label
 yLabelValues = ['T-shirt/top','Trouser','Pullover','Dress','Coat','Sandal','Shirt','Sneaker','Bag','Ankle boot']
 
+numLatentVars = 10
 # encoder parameters
-numLatentVars = 2
-numLayers = 2
+# numLatentVars = 10
+numLayers = 4
 inputShape = (28, 28, 1)
-layerInputs = [[32, 3, 1, None],[64, 3, 2, None]]
+layerInputs = [[32, 3, 1, None],[64, 3, 2, None],[64, 3, 2, None],[64, 3, 1, None]]
 encoderParams = [inputShape, numLayers, layerInputs, numLatentVars]
 
 
 # decoder parameters
-inputShape = (2,)
-denseSize = 14 * 14 * 64
-reshapeSize = (14, 14, 64)
-numLayers = 1 # should be 1 less than numLayers in encoder
+inputShape = (numLatentVars,)
+denseSize = 7 * 7 * 64
+reshapeSize = (7, 7, 64)
+numLayers = 3 # should be 1 less than numLayers in encoder
 layerInputs = [
-    [64, 3, 2, None],
+    [64, 3, 1, None],
+     [64, 3, 2, None],
+      [32, 3, 2, None]
 ]
 outputInputs = [1, 3, 1, 'sigmoid']
 decoderParams = [inputShape, denseSize, reshapeSize, numLayers, layerInputs, outputInputs]
 
 batchSize = 128
-numLatentVars = 2
+# numLatentVars = 10
 epochs = 3
 trainLength = 60000 # number of images to use in training, this is half the maximum
-learningRate = 0.001
-VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed)
+learningRate = 0.0005
+VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed, 'model4')
 
 VAE.train()
 
@@ -46,7 +49,7 @@ VAE.testTrainModel()
 VAE.testModel()
 
 """
-Time for training is 311.0560004711151
-Average Loss for predicting 10000 training images: 211.3249969482422
-Time for predicting 10000 test images is 11.860170602798462 sec, Average loss: 211.3617706298828
+Time for training is 301.8237235546112
+Average Loss for predicting 10000 training images: 32.96920394897461
+Time for predicting 10000 test images is 16.534999132156372 sec, Average loss: 33.073001861572266
 """
