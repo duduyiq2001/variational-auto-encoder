@@ -33,7 +33,7 @@ numLatentVars = 10
 epochs = 30
 trainLength = 60000 # number of images to use in training, this is half the maximum
 learningRate = 0.0001
-VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,"model8_30_1")
+VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,"model8_30_1",logdir="model8_30_1dir")
 
 VAE.train()
 
