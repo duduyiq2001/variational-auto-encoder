@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class fashionVAE():
-  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,name="dbehdbw"):
+  def __init__(self, encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,name="dbehdbw",logdir= "newmodellog"):
     self.epochs = epochs
     self.enc = self.encoder(*encoderParams)
     self.enc.output
@@ -23,12 +23,14 @@ class fashionVAE():
     self.samplingLayer = self.sampling((numLatentVars,), (numLatentVars,))
     self.optimizer = tf.keras.optimizers.legacy.Adam(lr = learningRate)
     self.trainBatch = tf.data.Dataset.from_tensor_slices(xTrain[:trainLength]).shuffle(seed).batch(batchSize)
+    self.batchSize = batchSize
     self.xTrain = xTrain
     self.xTest = xTest
     self.yTest = yTest
     self.xTestReshaped = xTestReshaped
     self.yLabelValues = yLabelValues
     self.name = name
+    self.logdir = logdir
 
   def sampling(self, input1,input2):
     def samplingModelLambda(inputParams):
@@ -118,6 +120,7 @@ class fashionVAE():
         start = time.time()
         i = 0
         loss_ = []
+        counter = 0
         for image_batch in self.trainBatch:
             i += 1
             loss = self.train_step(image_batch)
@@ -125,6 +128,10 @@ class fashionVAE():
             if i % 5 == 0:
               print(f'Image batch {i}, loss: {tf.reduce_mean(loss)}')
             loss_.append(tf.reduce_mean(loss))
+        print(f'epoch{epoch} has loss{sum(loss_)/(1.0*i)}')
+        with tf.summary.create_file_writer(self.logdir).as_default():
+          tf.summary.scalar('loss',sum(loss_)/(1.0*i), step=epoch)
+
         totTime =  time.time()-start
         self.timeTrain.append(totTime)
         print('Time for epoch {} is {} sec'.format(epoch + 1, totTime))
