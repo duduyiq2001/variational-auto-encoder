@@ -1,10 +1,11 @@
 from vae import *
+print(tf.__version__)
 
 (xTrain, yTrain), (xTest, yTest) = tf.keras.datasets.fashion_mnist.load_data()
 xTrain = xTrain.reshape(xTrain.shape[0], 28, 28, 1).astype('float32')/255.0
 # xTrain = xTrain[:1500] # first 100 images
 # Batch + shuffle data
-seed = 60000 # seed for shuffling
+#seed = 60000 # seed for shuffling
 xTestReshaped = xTest.reshape(xTest.shape[0], 28, 28, 1).astype('float32')/255.0 # necessary when testing
 
 # Create dictionary of target classes
@@ -32,9 +33,9 @@ batchSize = 128
 numLatentVars = 10
 epochs = 30
 trainLength = 60000 # number of images to use in training, this is half the maximum
-learningRate = 0.0001
-VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, seed,"model10_30", "model10_30dir")
-VAE.optimizer = tf.keras.optimizers.legacy.SGD(lr= learningRate, momentum=0.01)
+learningRate = 0.00001
+VAE = fashionVAE(encoderParams, decoderParams, batchSize, numLatentVars, epochs, trainLength, learningRate, xTrain, xTest, yTest, xTestReshaped, yLabelValues, 600,"model10_30", "model10_30dir")
+VAE.optimizer = tf.keras.optimizers.legacy.SGD(lr=learningRate)
 VAE.train()
 
 #VAE.generateImages()
